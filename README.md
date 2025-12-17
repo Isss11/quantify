@@ -37,13 +37,13 @@ npm run dev
 1. Create a virtual environment to run the Django application in.
 
 ```
-py -m venv stockPredictorEnv
+python -m venv env
 ```
 
 2. Activate the virtual environment.
 
 ```
-stockPredictorEnv\Scripts\activate
+. env/bin/activate
 ```
 
 3. Use the terminal you activated the virtual environment, run the Django application.

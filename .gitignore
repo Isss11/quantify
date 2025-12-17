@@ -7,6 +7,6 @@ stock_forecaster/stock_forecaster/__pycache__/settings.cpython-311.pyc
 stock_forecaster/stock_forecaster/__pycache__/settings.cpython-311.pyc
 stock_forecaster/stock_forecaster/__pycache__/settings.cpython-311.pyc
 stock_forecaster/db.sqlite3
-stockPredictorEnv/pyvenv.cfg
-stockPredictorEnv/Scripts/activate
-stockPredictorEnv/Scripts/activate.bat
+
+# Ignores all folders in root directory with 'env' in them
+*env*/

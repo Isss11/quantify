@@ -1,0 +1,9 @@
+Django
+djangorestframework
+django-cors-headers
+pandas
+statsmodels
+pmdarima
+yfinance
+matplotlib
+tensorflow
