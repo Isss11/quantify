@@ -14,50 +14,31 @@ While it is difficult to forecast stock prices in order to earn arbitrage return
 
 ## Set-up
 
-### Front-end
+I have only developed this in WSL, so please consider this when referencing my documentation. This application may not work on Windows.
 
-1. Change into the `quantify-ui` directory and install dependencies.
-
-```
-cd quantify-ui
-```
+1. Set-up backend and install dependencies.
 
 ```
-npm install
+make setup-backend
 ```
 
-2. Run the front-end application on **Google Chrome**.
+2. Start the back-end application.
 
 ```
-npm run dev
+make run-backend
 ```
 
-### Back-end
-
-1. Create a virtual environment to run the Django application in.
+3. In a separate terminal, start the front-end application.
 
 ```
-python -m venv env
+make run-frontend
 ```
 
-2. Activate the virtual environment.
+You should now be able to see the application in your computer's browser.
 
-```
-. env/bin/activate
-```
-
-3. Use the terminal you activated the virtual environment, run the Django application.
-
-```
-cd stock_forecaster
-```
-
-```
-py manage.py runserver
-```
 
 ## Acknowledgments
 
-1. For valid tickers file: https://github.com/ahnazary/Finance/blob/master/finance/src/database/valid_tickers.csv
-2. https://www.youtube.com/watch?v=CbTU92pbDKw&t.
-3. https://machinelearningmastery.com/time-series-prediction-lstm-recurrent-neural-networks-python-keras/
+1. I used this [valid tickers file](https://github.com/ahnazary/Finance/blob/master/finance/src/database/valid_tickers.csv) to ensure that the correct tickers are used.
+2. I referenced [this YouTube video](https://www.youtube.com/watch?v=CbTU92pbDKw&t) to implement an LSTM model with Keras/Python.
+3. I referenced [this article](https://machinelearningmastery.com/time-series-prediction-lstm-recurrent-neural-networks-python-keras/) to learn about how LSTM models work.

@@ -9,13 +9,16 @@ class StockDetail:
         
     # Returning relevant information from Yahoo Finance API
     def getGeneralInfo(self):
-        generalInfo = dict()
-        generalInfo["tickerSymbol"] = self.stock.info['underlyingSymbol']
-        generalInfo["name"] = self.stock.info["shortName"]
-        generalInfo["price"] = self.stock.info["currentPrice"]
-        generalInfo["currency"] = self.stock.info["financialCurrency"]
-        
-        return generalInfo
+        try:
+            generalInfo = dict()
+            generalInfo["tickerSymbol"] = self.stock.info['symbol']
+            generalInfo["name"] = self.stock.info["shortName"]
+            generalInfo["price"] = self.stock.info["currentPrice"]
+            generalInfo["currency"] = self.stock.info["financialCurrency"]
+            
+            return generalInfo
+        except Exception:
+            raise ValueError("Unable to obtain ticker details.")
         
 if __name__ == "__main__":
     stock = StockDetail("C")

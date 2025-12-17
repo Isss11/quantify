@@ -9,7 +9,6 @@ import LSTMDetails from './components/LSTMDetails.vue';
 import StockDetail from './components/StockDetail.vue';
 import ForecastedReturnsTable from './components/ForecastedReturnsTable.vue';
 import ReturnsGraph from './components/ReturnsGraph.vue';
-import ARIMADetails from './components/ARIMADetails.vue';
 import StockPriceGraph from './components/StockPriceGraph.vue'
 import PrimeVue from 'primevue/config';
 import Lara from '@primevue/themes/lara';
@@ -35,7 +34,6 @@ app.component('LSTMDetails', LSTMDetails);
 app.component('StockDetail', StockDetail);
 app.component('ForecastedReturnsTable', ForecastedReturnsTable);
 app.component('ReturnsGraph', ReturnsGraph);
-app.component('ARIMADetails', ARIMADetails);
 app.component('StockPriceGraph', StockPriceGraph);
 
 app.use(SimpleTypeahead);

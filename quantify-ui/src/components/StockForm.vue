@@ -38,7 +38,7 @@ const handleChange = (e) => {
             id="tickerSelector"
             placeholder="Stock Ticker"
             :items="validTickers"
-            @onInput="handleChange"
+            @onBlur="handleChange"
             :minInputLength="1"
         />
 
