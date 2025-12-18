@@ -1,9 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import LSTM
+import yfinance as yf # For quick fix, this needs to be imported before tensorflow
+import keras
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 from . import StockPrices
@@ -38,18 +37,18 @@ class LSTMForecaster:
         self.model = self.getLSTM(self.trainX, self.trainY, epochs, batchSize)
         
     def getLSTM(self, trainX, trainY, epochs, batchSize):
-        model = Sequential()
-        model.add(LSTM(4, input_shape=(1, self.lookBack)))
+        model = keras.models.Sequential()
+        model.add(keras.Input(shape=(1, self.lookBack)))
+        model.add(keras.layers.LSTM(4, return_sequences=True))
 
         # Adds a neural network layer with one input
-        model.add(Dense(1))
+        model.add(keras.layers.Dense(1))
 
         model.compile(loss='mean_squared_error', optimizer='adam')
         model.fit(trainX, trainY, epochs=epochs, batch_size=batchSize, verbose=2)
         
         return model
-        
-    # Source: https://machinelearningmastery.com/time-series-prediction-lstm-recurrent-neural-networks-python-keras/
+
     def createDataset(self, dataset, lookBack):
         dataX, dataY = [], []
     
@@ -119,8 +118,8 @@ class LSTMForecaster:
         forecastedPrices['date'] = forecastedPrices['date'].dt.date
         
         # Organize data into a dictionary to be consumed
-        combinedPrices = {'realized': {'date': realizedPrices['date'].tolist(), 'prices': realizedPrices['adjClose'].tolist()},
-                        'forecasted': {'date': forecastedPrices['date'].tolist(), 'prices': forecastedPrices['adjClose'].tolist()}}
+        combinedPrices = {'realized': {'date': realizedPrices['date'].tolist(), 'prices': realizedPrices['close'].tolist()},
+                        'forecasted': {'date': forecastedPrices['date'].tolist(), 'prices': forecastedPrices['close'].tolist()}}
         
         return combinedPrices
     

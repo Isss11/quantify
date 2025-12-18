@@ -12,8 +12,8 @@ class StockPrices:
         stockPrices = yf.download(ticker, start=sampleStartDate)
         stockPrices = stockPrices.dropna()
         stockPrices = stockPrices.reset_index()
-        stockPrices = stockPrices.rename(columns={"Date": "date", "Open": "open", "High": "high", "Low": "low", "Close": "close", "Adj Close": "adjClose", "Volume": "volume"})
-        stockPrices = stockPrices.drop(columns=['open', 'high', 'low', 'close', 'volume'])
+        stockPrices = stockPrices.rename(columns={"Date": "date", "Open": "open", "High": "high", "Low": "low", "Close": "close", "Volume": "volume"})
+        stockPrices = stockPrices.drop(columns=['open', 'high', 'low', 'volume'])
         
         return stockPrices
     
@@ -21,12 +21,12 @@ class StockPrices:
     def calculateReturns(self):
         # Constructing a new variable to achieve a stationary process.
         # Getting log difference approximation of percentage changes (a way of first differencing the data)
-        self.prices['logAdjClose'] = np.log(self.prices['adjClose'])
-        self.prices['logDifAdjClose'] = self.prices['logAdjClose'].diff()
+        self.prices['logClose'] = np.log(self.prices['close'])
+        self.prices['logDifClose'] = self.prices['logClose'].diff()
         
         # Convert to percentage changes (and drop top row since it does not have a percentage change)
         self.prices = self.prices.dropna()
-        self.prices['logDifAdjClose'] = self.prices['logDifAdjClose'] * 100
+        self.prices['logDifClose'] = self.prices['logDifClose'] * 100
         
     # Get final date of recorded returns
     def getFinalRealizedDate(self):
@@ -34,4 +34,4 @@ class StockPrices:
     
     # Creates a row of normalized data, given a scaler
     def getNormalizedData(self, scaler):
-        return scaler.fit_transform(pd.DataFrame(self.prices['adjClose']))
+        return scaler.fit_transform(pd.DataFrame(self.prices['close']))

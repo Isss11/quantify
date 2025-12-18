@@ -3,6 +3,7 @@ djangorestframework
 django-cors-headers
 pandas
 statsmodels
+curl_cffi
 yfinance
 matplotlib
 tensorflow
