@@ -18,9 +18,9 @@ const handleRequestModel = (e, inputTicker, inputForecastPeriod, chosenModel, st
     ticker: inputTicker,
     forecastLength: inputForecastPeriod,
     sampleStartDate: startDate,
-    lookBack: 8,
-    epochs: 3,
-    batchSize: 1
+    lookBack: lookBack,
+    epochs: epochs,
+    batchSize: batchSize
   })
   .then(response => {
     modelParameters.value = response.data.parameters,
