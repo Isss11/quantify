@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import validTickers from '../assets/validTickers';
 
@@ -12,6 +12,7 @@ const lookBack = ref(null)
 const epochs = ref(null)
 const batchSize = ref(null)
 const modelOptions = ref(['LSTM'])
+const maxDate = ref(new Date())
 
 const emit = defineEmits(['request-model'])
 
@@ -26,6 +27,13 @@ const handleChange = (e) => {
         stockDetails.value = response.data;
     })
     .catch(e => console.log("Stock not available for forecasting."))
+}
+
+const updateMaxDate = (e) => {
+    axios.post("http://127.0.0.1:8000/max-start-date/" + (e.value ?? 0) + "/")
+    .then(res => {
+        maxDate.value = new Date(res.data.max_start_date)
+    })
 }
 
 </script>
@@ -50,7 +58,7 @@ const handleChange = (e) => {
         </div>
         <label for="dateInput">Data Start Date</label>
         <div>
-            <DatePicker id="dateInput" v-model="startDate"/>
+            <DatePicker id="dateInput" :max-date="maxDate" v-model="startDate"/>
         </div>
         <label for="forecastInput">Forecast Length</label>
         <div>
@@ -61,7 +69,7 @@ const handleChange = (e) => {
             <h4>LSTM Parameters</h4>
             <label for="lookBackLength">Look Back Length</label>
             <div>
-                <InputNumber  id="lookbackLength" :min="1" :max="30" v-model="lookBack"/>
+                <InputNumber  id="lookbackLength" :min="1" :max="50" @input="updateMaxDate" v-model="lookBack"/>
             </div>
             <label for="epochsInput">Epochs</label>
             <div>
@@ -72,7 +80,6 @@ const handleChange = (e) => {
                 <InputNumber id="batchSizeInput"  :min="1" :max="30" v-model="batchSize"/>
             </div>
         </div>
-
         <PrimeButton class="forecast-button" label="Forecast" @click="handleSubmit"/>
 
     </form>

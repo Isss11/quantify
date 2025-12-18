@@ -1,10 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from . import LSTMForecaster, StockDetail
+from . import LSTMForecaster, StockDetail, MaxStartDate
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 from rest_framework.decorators import api_view
-from rest_framework import status
 
 @api_view(['POST'])
 def lstmForecast(request):
@@ -30,3 +29,9 @@ def stockDetail(request, stockTicker):
     stockInfo = StockDetail.StockDetail(str(stockTicker))
     
     return JsonResponse(stockInfo.getGeneralInfo())
+
+@api_view(['POST'])
+def max_start_date(request, look_back): 
+    start_date = MaxStartDate.get_max_start_date(int(look_back))
+       
+    return JsonResponse({"max_start_date": start_date})
