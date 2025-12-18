@@ -3,6 +3,19 @@
 This is full-stack web application that leverages a Recurrent Neural Network (LSTM model) to forecast future stock prices.
 While it is difficult to forecast stock prices in order to earn arbitrage returns, this project was created so that I could learn some of the basics of machine learning.
 
+## Images
+
+*Forecasted Apple Returns*
+![Stock Forecasting Overview](assets/stock_forecasting_overview.png)
+
+*Historical Data Only*
+
+![Historical Data View](assets/historical_values_only.png)
+
+*Forecasted Data Only*
+
+![Forecasted Data View](assets/forecasted_values_only.png)
+
 ## Technologies Used
 
 - Python

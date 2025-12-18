@@ -12,6 +12,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 from . import StockPrices
 
+TRAIN_PROPORTION = 2/3
+
 # Uses an LSTM model to forecast prices of a given stock
 class LSTMForecaster:
     def __init__(self, ticker, sampleStartDate) -> None:
@@ -26,15 +28,14 @@ class LSTMForecaster:
         
         # Create training and test data for model evaluation
         # Actual predictions (indicated in the app's UI) will be for data beyond current date
-        trainSize = int(len(self.normalizedPrices) * 0.7)
-        
+        trainSize = int(len(self.normalizedPrices) * TRAIN_PROPORTION)
         trainingData = self.normalizedPrices[0:trainSize,:]
         testData = self.normalizedPrices[trainSize:len(self.normalizedPrices),:]
-        
+
         # Create data-set with a given look-back amount
         self.trainX, self.trainY = self.createDataset(trainingData, self.lookBack)
         self.testX, self.testY = self.createDataset(testData, self.lookBack)
-        
+
         # Reshape data to fit with model
         self.trainX = np.reshape(self.trainX, (self.trainX.shape[0], 1, self.trainX.shape[1]))
         self.testX = np.reshape(self.testX, (self.testX.shape[0], 1, self.testX.shape[1]))
@@ -57,9 +58,8 @@ class LSTMForecaster:
     def createDataset(self, dataset, lookBack):
         dataX, dataY = [], []
     
-        for i in range(len(dataset)-lookBack-1):
-            a = dataset[i:(i + lookBack), 0]
-            dataX.append(a)
+        for i in range(len(dataset) - lookBack - 1):
+            dataX.append(dataset[i:(i + lookBack), 0])
             dataY.append(dataset[i + lookBack, 0])
 
         return np.array(dataX), np.array(dataY)
@@ -126,7 +126,6 @@ class LSTMForecaster:
         return combinedPrices
     
     # Get dates so many days into the future
-    # TODO: Replace to consider actual trading days
     def getDatesIntoFuture(self, s):
         lastDate = self.stock.getFinalRealizedDate()
         

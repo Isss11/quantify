@@ -17,7 +17,7 @@ const handleRequestModel = (e, inputTicker, inputForecastPeriod, chosenModel, st
   axios.post("http://127.0.0.1:8000/lstmForecast/", {
     ticker: inputTicker,
     forecastLength: inputForecastPeriod,
-    sampleStartDate: startDate,
+    sampleStartDate: startDate.toISOString().substring(0,10),
     lookBack: lookBack,
     epochs: epochs,
     batchSize: batchSize
