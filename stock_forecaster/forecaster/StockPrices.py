@@ -34,5 +34,5 @@ class StockPrices:
         return self.prices['date'].values[-1]
     
     # Creates a row of normalized data, given a scaler
-    def getNormalizedData(self, scaler):
+    def get_normalized_data(self, scaler):
         return scaler.fit_transform(pd.DataFrame(self.prices['close']))

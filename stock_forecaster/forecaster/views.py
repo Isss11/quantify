@@ -12,11 +12,11 @@ def lstmForecast(request):
     
     # Creating model with given look-back amount
     forecaster = LSTMForecaster.LSTMForecaster(requestValues["ticker"], requestValues["sampleStartDate"])
-    forecaster.createModel(requestValues["lookBack"], requestValues["epochs"], requestValues["batchSize"])
+    forecaster.create_model(requestValues["lookBack"], requestValues["epochs"], requestValues["batchSize"])
     
     # Getting prices and model accuracy details to include in response
-    prices = forecaster.getCombinedPrices(requestValues['forecastLength'])
-    modelAccuracy, modelDetails = forecaster.getModelAccuracy()
+    prices = forecaster.get_combined_pricess(requestValues['forecastLength'])
+    modelAccuracy, modelDetails = forecaster.calc_model_accuracy()
     modelParameters = {"modelType": "LSTM", "stock": requestValues["ticker"], "forecastLength": requestValues["forecastLength"], "lookBack": requestValues["lookBack"], "epochs": requestValues["epochs"], "batchSize": requestValues["batchSize"]}
     
     response = dict({"parameters": modelParameters, "details": modelDetails, "prices": prices, "modelAccuracy": modelAccuracy})
