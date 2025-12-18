@@ -1,7 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import yfinance as yf # For quick fix, this needs to be imported before tensorflow
+
+# FIXME Quick fixes
+import yfinance as yf # import yfinance before keras to avoid conflicts
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # use CPU
+
 import keras
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
@@ -35,11 +40,11 @@ class LSTMForecaster:
         self.testX = np.reshape(self.testX, (self.testX.shape[0], 1, self.testX.shape[1]))
         
         self.model = self.getLSTM(self.trainX, self.trainY, epochs, batchSize)
-        
+         
     def getLSTM(self, trainX, trainY, epochs, batchSize):
         model = keras.models.Sequential()
         model.add(keras.Input(shape=(1, self.lookBack)))
-        model.add(keras.layers.LSTM(4, return_sequences=True))
+        model.add(keras.layers.LSTM(4))
 
         # Adds a neural network layer with one input
         model.add(keras.layers.Dense(1))
@@ -100,18 +105,15 @@ class LSTMForecaster:
         return self.scaler.inverse_transform(predictions)
         
     # Obtains forecasted values, and combines them into a dictionary with the realized values
-    def getCombinedPrices(self, s):
-        realizedPrices = pd.DataFrame(self.stock.prices, columns=['date', 'adjClose'])
+    def getCombinedPrices(self, s):        
+        realizedPrices = pd.DataFrame(self.stock.prices, columns=['date', 'close'])
                 
         # Obtain forecasts to also add in dictionary separately
         forecasted = np.reshape(self.predictIntoFuture(s), (1, -1))[0]
         forecastedDates = self.getDatesIntoFuture(s)
         
-        # print(forecasted)
-        # print(forecastedDates)
-        
         # Creating Data Frame to contain the predicted prices
-        forecastedPrices = pd.DataFrame({'date': forecastedDates, 'adjClose': forecasted})
+        forecastedPrices = pd.DataFrame({'date': forecastedDates, 'close': forecasted})
         
         # Remove time from date columns
         realizedPrices['date'] = realizedPrices['date'].dt.date

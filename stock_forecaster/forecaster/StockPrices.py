@@ -9,7 +9,8 @@ class StockPrices:
     # Retrives data from Yahoo Finance
     # Only need dates and adjusted close data
     def retrieveData(self, ticker, sampleStartDate):
-        stockPrices = yf.download(ticker, start=sampleStartDate)
+        stockPrices = yf.download(ticker, start=sampleStartDate, multi_level_index=False)
+                
         stockPrices = stockPrices.dropna()
         stockPrices = stockPrices.reset_index()
         stockPrices = stockPrices.rename(columns={"Date": "date", "Open": "open", "High": "high", "Low": "low", "Close": "close", "Volume": "volume"})
