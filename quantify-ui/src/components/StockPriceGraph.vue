@@ -16,7 +16,7 @@ const getRealizedData = () => {
   labels: props.prices.realized.date,
   datasets: [
     {
-      label: "Adjusted Close Prices (Historical)",
+      label: "Close Prices (Historical)",
       backgroundColor: realizedColour,
       data: props.prices.realized.prices,
     },
@@ -29,7 +29,7 @@ const getForecastedData = () => {
   labels: props.prices.forecasted.date,
   datasets: [
     {
-      label: "Adjusted Close Prices (Forecasted)",
+      label: "Close Prices (Forecasted)",
       backgroundColor: forecastedColour,
       data: props.prices.forecasted.prices,
     },
@@ -42,7 +42,7 @@ const getCombinedData = () => {
   labels: getCombinedDates(),
   datasets: [
     {
-      label: "Adjusted Close Prices",
+      label: "Close Prices (Historical & Forecasted)",
       backgroundColor: getPointColours(),
       data: getCombinedPrices(),
     },

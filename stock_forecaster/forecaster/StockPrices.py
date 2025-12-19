@@ -6,8 +6,8 @@ class StockPrices:
     def __init__(self, ticker, sampleStartDate) -> None:
         self.prices = self.retrieveData(ticker, sampleStartDate)
     
-    # Retrives data from Yahoo Finance
-    # Only need dates and adjusted close data
+    # Retrieves data from Yahoo Finance
+    # Only need dates and close data
     def retrieveData(self, ticker, sampleStartDate):
         stockPrices = yf.download(ticker, start=sampleStartDate, multi_level_index=False)
                 
