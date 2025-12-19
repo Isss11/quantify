@@ -24,6 +24,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import FloatLabel from 'primevue/floatlabel';
 import { definePreset } from '@primevue/themes';
+import ToastService from 'primevue/toastservice'
 
 const app = createApp(App)
 
@@ -37,6 +38,7 @@ app.component('ReturnsGraph', ReturnsGraph);
 app.component('StockPriceGraph', StockPriceGraph);
 
 app.use(SimpleTypeahead);
+app.use(ToastService)
 
 const MyPreset = definePreset(Lara, {
     semantic: {

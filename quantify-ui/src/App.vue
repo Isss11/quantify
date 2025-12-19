@@ -2,6 +2,8 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import LSTMDetails from './components/LSTMDetails.vue';
+import { useToast } from 'primevue/usetoast'
+import Toast from 'primevue/toast';
 
 const modelParameters = ref('')
 const modelDetails = ref('')
@@ -9,6 +11,7 @@ const modelPrices = ref('');
 const modelAccuracy = ref('')
 const modelExists = ref(false);
 const loadingModel = ref(false)
+const toast = useToast();
 
 // Requests to forecast financial data
 const handleRequestModel = (e, inputTicker, inputForecastPeriod, chosenModel, startDate, lookBack, epochs, batchSize) => {
@@ -31,13 +34,19 @@ const handleRequestModel = (e, inputTicker, inputForecastPeriod, chosenModel, st
     // Indicate that the model exists to show the model display
     modelExists.value = true;
 
-    console.log('Finished loading model')
+    console.log('Finished loading model.')
+    toast.add({ severity: 'success', summary: 'Forecast Generated', detail: 'An LSTM forecast has been generated.', life: 3000 });
     loadingModel.value = false
+  }).catch((e) => {
+    loadingModel.value = false
+    toast.add({ severity: 'error', summary: 'Error', detail: `The forecast specified failed to generate due to the following error: ${e}.`, life: 3000 });
+    console.log(`An error occurred: ${e}.`)
   })
 }
 </script>
 
 <template>
+  <Toast/>
   <header>
     <NavHeader />
   </header>

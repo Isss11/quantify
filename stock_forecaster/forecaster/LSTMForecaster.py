@@ -21,10 +21,9 @@ class LSTMForecaster:
         self.scaler = MinMaxScaler(feature_range=(0, 1))
         
     # Creates LSTM Model
-    def createModel(self, lookBack, epochs, batchSize):
+    def create_model(self, lookBack, epochs, batchSize):
         self.lookBack = lookBack
-        
-        self.normalizedPrices = self.stock.getNormalizedData(self.scaler)
+        self.normalizedPrices = self.stock.get_normalized_data(self.scaler)
         
         # Create training and test data for model evaluation
         # Actual predictions (indicated in the app's UI) will be for data beyond current date
@@ -33,16 +32,16 @@ class LSTMForecaster:
         testData = self.normalizedPrices[trainSize:len(self.normalizedPrices),:]
 
         # Create data-set with a given look-back amount
-        self.trainX, self.trainY = self.createDataset(trainingData, self.lookBack)
-        self.testX, self.testY = self.createDataset(testData, self.lookBack)
+        self.trainX, self.trainY = self.create_dataset(trainingData, self.lookBack)
+        self.testX, self.testY = self.create_dataset(testData, self.lookBack)
 
         # Reshape data to fit with model
         self.trainX = np.reshape(self.trainX, (self.trainX.shape[0], 1, self.trainX.shape[1]))
         self.testX = np.reshape(self.testX, (self.testX.shape[0], 1, self.testX.shape[1]))
         
-        self.model = self.getLSTM(self.trainX, self.trainY, epochs, batchSize)
+        self.model = self.get_lstm(self.trainX, self.trainY, epochs, batchSize)
          
-    def getLSTM(self, trainX, trainY, epochs, batchSize):
+    def get_lstm(self, trainX, trainY, epochs, batchSize):
         model = keras.models.Sequential()
         model.add(keras.Input(shape=(1, self.lookBack)))
         model.add(keras.layers.LSTM(4))
@@ -51,36 +50,47 @@ class LSTMForecaster:
         model.add(keras.layers.Dense(1))
 
         model.compile(loss='mean_squared_error', optimizer='adam')
-        model.fit(trainX, trainY, epochs=epochs, batch_size=batchSize, verbose=2)
+        model.fit(trainX, trainY, epochs=epochs, batch_size=batchSize)
         
         return model
 
-    def createDataset(self, dataset, lookBack):
+    def create_dataset(self, dataset, lookBack):
+        data_len = len(dataset)
+        
+        if not self.is_valid_dataset_len(data_len, lookBack):
+            raise ValueError("Dataset length is not long enough to compute with look backs.")
+        
         dataX, dataY = [], []
-    
-        for i in range(len(dataset) - lookBack - 1):
+        
+        for i in range(data_len - lookBack - 1):
             dataX.append(dataset[i:(i + lookBack), 0])
             dataY.append(dataset[i + lookBack, 0])
 
         return np.array(dataX), np.array(dataY)
     
+    def is_valid_dataset_len(self, dataset_len, look_back):
+        if dataset_len - look_back - 1 <= 0:
+            return False
+        
+        return True
+
     # Analyzes quality of model, comparing the results of the training data and test data
-    def getModelAccuracy(self):
-        trainPredicted = self.makeForecasts(self.trainX)
-        testPredicted = self.makeForecasts(self.testX)
+    def calc_model_accuracy(self):
+        trainPredicted = self.make_forecasts(self.trainX)
+        testPredicted = self.make_forecasts(self.testX)
         
         trainActual = self.scaler.inverse_transform([self.trainY])
         testActual = self.scaler.inverse_transform([self.testY])
         
-        trainScore = self.computeError(trainPredicted, trainActual)
-        testScore = self.computeError(testPredicted, testActual)
+        trainScore = self.compute_error(trainPredicted, trainActual)
+        testScore = self.compute_error(testPredicted, testActual)
         
         # Convert Numpy arrays to lists
         newShape = (1, -1)
-        trainPredicted = self.getConvertedPrices(trainPredicted, newShape)
-        testPredicted = self.getConvertedPrices(testPredicted, newShape)
-        trainActual = self.getConvertedPrices(trainActual, newShape)
-        testActual = self.getConvertedPrices(testActual, newShape)
+        trainPredicted = self.get_converted_prices(trainPredicted, newShape)
+        testPredicted = self.get_converted_prices(testPredicted, newShape)
+        trainActual = self.get_converted_prices(trainActual, newShape)
+        testActual = self.get_converted_prices(testActual, newShape)
         
         # Creating a dictionary that provides information on the model's accuracy
         modelAccuracy = dict({"trainPredicted": trainPredicted, "testPredicted": testPredicted, "trainActual": trainActual,
@@ -91,26 +101,26 @@ class LSTMForecaster:
         return modelAccuracy, modelDetails
     
     # Converts numpy array to a list
-    def getConvertedPrices(self, prices, newShape):
+    def get_converted_prices(self, prices, newShape):
         return np.reshape(prices, newShape).tolist()
         
-    def computeError(self, predicted, actual):
+    def compute_error(self, predicted, actual):
         return np.sqrt(mean_squared_error(actual[0], predicted[:,0]))
     
     # Develops Forecasts
-    def makeForecasts(self, X):
+    def make_forecasts(self, X):
         predictions = self.model.predict(X)
         
         # Change predictions back to original units to calculate RMSE in original units
         return self.scaler.inverse_transform(predictions)
         
     # Obtains forecasted values, and combines them into a dictionary with the realized values
-    def getCombinedPrices(self, s):        
+    def get_combined_pricess(self, s):        
         realizedPrices = pd.DataFrame(self.stock.prices, columns=['date', 'close'])
                 
         # Obtain forecasts to also add in dictionary separately
-        forecasted = np.reshape(self.predictIntoFuture(s), (1, -1))[0]
-        forecastedDates = self.getDatesIntoFuture(s)
+        forecasted = np.reshape(self.predict_future(s), (1, -1))[0]
+        forecastedDates = self.get_future_dates(s)
         
         # Creating Data Frame to contain the predicted prices
         forecastedPrices = pd.DataFrame({'date': forecastedDates, 'close': forecasted})
@@ -126,7 +136,7 @@ class LSTMForecaster:
         return combinedPrices
     
     # Get dates so many days into the future
-    def getDatesIntoFuture(self, s):
+    def get_future_dates(self, s):
         lastDate = self.stock.getFinalRealizedDate()
         
         dates = []
@@ -136,7 +146,7 @@ class LSTMForecaster:
         
         return dates
     
-    def predictIntoFuture(self, s):
+    def predict_future(self, s):
         # For forecasted values only
         predictedNormalizedPrices = []
 
@@ -165,7 +175,7 @@ class LSTMForecaster:
 # Class manual testing code
 if __name__ == "__main__":
     forecaster = LSTMForecaster("C", "2010-01-01")
-    forecaster.createModel(8)
+    forecaster.create_model(8)
     
     # Getting forecasted values for 5 days ahead
-    print(forecaster.getCombinedPrices(5))
+    print(forecaster.get_combined_pricess(5))
