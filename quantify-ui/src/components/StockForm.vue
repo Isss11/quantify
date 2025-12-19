@@ -22,16 +22,17 @@ const handleSubmit = (e) => {
 }
 
 const handleChange = (e) => {
+    setIsSubmissionAllowed()
     axios.post("http://127.0.0.1:8000/stockDetail/" + e.input + "/")
     .then(response => {
         ticker.value = e.input;
         stockDetails.value = response.data;
-        setIsSubmissionAllowed()
     })
     .catch(e => console.log("Stock not available for forecasting."))
 }
 
 const updateMaxDate = (e) => {
+    setIsSubmissionAllowed()
     axios.post("http://127.0.0.1:8000/max-start-date/" + (e.value ?? 0) + "/")
     .then(res => {
         maxDate.value = new Date(res.data.max_start_date)
@@ -40,8 +41,6 @@ const updateMaxDate = (e) => {
         if (maxDate.value < startDate.value) {
             startDate.value = null;
         }
-
-        setIsSubmissionAllowed()
     })
 }
 
