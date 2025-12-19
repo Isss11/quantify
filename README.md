@@ -1,7 +1,6 @@
 # Quantify
 
-This is full-stack web application that leverages a Recurrent Neural Network (LSTM model) to forecast future stock prices.
-While it is difficult to forecast stock prices in order to earn arbitrage returns, this project was created so that I could learn some of the basics of machine learning.
+This is full-stack web application that leverages a Recurrent Neural Network (LSTM model) to forecast future stock prices. While it is difficult to use simplistic ML strategies to beat the market, I created this project to learn more about applications of machine learning in finance.
 
 ## Images
 

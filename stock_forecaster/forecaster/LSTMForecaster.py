@@ -115,12 +115,12 @@ class LSTMForecaster:
         return self.scaler.inverse_transform(predictions)
         
     # Obtains forecasted values, and combines them into a dictionary with the realized values
-    def get_combined_pricess(self, s):        
+    def get_combined_prices(self, forecast_len):        
         realizedPrices = pd.DataFrame(self.stock.prices, columns=['date', 'close'])
                 
         # Obtain forecasts to also add in dictionary separately
-        forecasted = np.reshape(self.predict_future(s), (1, -1))[0]
-        forecastedDates = self.get_future_dates(s)
+        forecasted = np.reshape(self.predict_future(forecast_len), (1, -1))[0]
+        forecastedDates = self.get_future_dates(forecast_len)
         
         # Creating Data Frame to contain the predicted prices
         forecastedPrices = pd.DataFrame({'date': forecastedDates, 'close': forecasted})
@@ -130,10 +130,10 @@ class LSTMForecaster:
         forecastedPrices['date'] = forecastedPrices['date'].dt.date
         
         # Organize data into a dictionary to be consumed
-        combinedPrices = {'realized': {'date': realizedPrices['date'].tolist(), 'prices': realizedPrices['close'].tolist()},
+        combined_prices = {'realized': {'date': realizedPrices['date'].tolist(), 'prices': realizedPrices['close'].tolist()},
                         'forecasted': {'date': forecastedPrices['date'].tolist(), 'prices': forecastedPrices['close'].tolist()}}
         
-        return combinedPrices
+        return combined_prices
     
     # Get dates so many days into the future
     def get_future_dates(self, s):
@@ -146,31 +146,32 @@ class LSTMForecaster:
         
         return dates
     
-    def predict_future(self, s):
+    # Predicts future values beyond the current date
+    def predict_future(self, forecast_len):
         # For forecasted values only
-        predictedNormalizedPrices = []
+        predicted_prices_normalized = []
 
         # Using look-back amount to append to normalized dataset and using forecasted data to predict future forecasted values
         # Note that this will cause larger errors, but is needed to perform real forecasts
-        for day in range(s):
+        for i in range(forecast_len):
             # Merging together the predicted and actual prices to use in future forecasts, if there are some predictions made
-            if len(predictedNormalizedPrices) != 0:
-                npPredicted = np.reshape(np.array(predictedNormalizedPrices), (-1, 1))    
-                combinedPrices = np.concatenate((self.normalizedPrices, npPredicted))
+            if len(predicted_prices_normalized) != 0:
+                np_predicted = np.reshape(np.array(predicted_prices_normalized), (-1, 1))    
+                combined_prices = np.concatenate((self.normalizedPrices, np_predicted))
             else:
-                combinedPrices = self.normalizedPrices
+                combined_prices = self.normalizedPrices
             
             # Taking the past amount of values, specified by the lookback amount. This will be used in the model predictions.
-            X = np.reshape(combinedPrices[-self.lookBack:], (-1, 1, self.lookBack))
+            X = np.reshape(combined_prices[-self.lookBack:], (-1, 1, self.lookBack))
             
             # Obtaining predicted price and adding it to the predicted prices array to be used in future forecasts (depending on lookback amount)
-            predictedPrice = self.model.predict(X)[0][0]
+            predicted_price = self.model.predict(X)[0][0]
             
-            predictedNormalizedPrices.append(predictedPrice)
+            predicted_prices_normalized.append(predicted_price)
             
-        predictedPrices = self.scaler.inverse_transform(np.reshape(predictedNormalizedPrices, (-1, 1)))
+        predicted_prices = self.scaler.inverse_transform(np.reshape(predicted_prices_normalized, (-1, 1)))
             
-        return predictedPrices
+        return predicted_prices
         
 # Class manual testing code
 if __name__ == "__main__":
@@ -178,4 +179,4 @@ if __name__ == "__main__":
     forecaster.create_model(8)
     
     # Getting forecasted values for 5 days ahead
-    print(forecaster.get_combined_pricess(5))
+    print(forecaster.get_combined_prices(5))
